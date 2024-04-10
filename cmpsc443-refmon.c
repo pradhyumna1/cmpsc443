@@ -124,15 +124,29 @@ int labelProcess( FILE *fh, char *name, char *proc, list *mapping )
 
 	/* make mapping node */
 	/* YOUR CODE */
-
+	map *m = (map *)malloc(sizeof(map));
+	m->len = strlen(proc);
+	m->name = (char *)malloc(m->len + 1); // +1 for null terminator
+	strncpy(m->name, proc, m->len);
+	m->name[m->len] = '\0'; // Ensure nu
 	/* use 'name' to determine level:
 	   user name use label_mapping 
 	   proc name use system_mapping	*/
 	/* YOUR CODE */
+	elt *nameMatch = get(mapping, name, &matchMapName);
+	if (nameMatch) {
+		m->l = ((map *)(nameMatch->data))->l;
+	}
+	else {
+		return -1;
+	}
 
 	/* add new mapping to system mappings */
 	/* YOUR CODE */
-
+	new = (elt *)malloc(sizeof(elt));
+	new->type = E_MAP;
+	new->data = (void *)m;
+	insert(&system_mapping, new, NULL);
 	/* log result */
 	level = (char *) malloc( m->l->len+1 );
 	strncpy( level, m->l->name, m->l->len );
@@ -160,9 +174,8 @@ int checkAccess( FILE *fh, char *proc, char *file, int op )
 {
 	/* get process mapping and file mapping from system_mapping */
 	/* YOUR CODE */
-	elt *procElt;
-	elt *fileElt;
-
+        elt *procElt = get(&system_mapping, proc, &matchMapName);
+        elt *fileElt = get(&system_mapping, file, &matchMapName);
 	/* check whether operation is authorized for those level */
 	if ( !procElt || !fileElt ) 
 	{
@@ -177,8 +190,8 @@ int checkAccess( FILE *fh, char *proc, char *file, int op )
 
 	/* get level index of process and file for authorization */
 	/* YOUR CODE */
-	int proc_level;
-	int file_level;
+       int proc_level = pos(&lattice, proc_map->l, &matchLevel);
+       int file_level = pos(&lattice, file_map->l, &matchLevel);
 
 	if (( proc_level < 0 ) || ( file_level < 0 )) {
 		fprintf( fh, "checkAccess[t%d]: labeling problem for process %s or file %s\n", 
@@ -188,7 +201,7 @@ int checkAccess( FILE *fh, char *proc, char *file, int op )
 
 	/* process level must be dominated or equal to file level to read/exec */
 	if ( op & (O_READ | O_EXEC) ) {
-		if ( /* YOUR CODE */ ) {  /* can't read */
+		if (proc_level > file_level) {  /* can't read */
 			if (!( mic && (!( op & O_EXEC )))) { /* still allow for read in mic */
 				fprintf( fh, "checkAccess[t%d]: deny %s: process %s for file %s\n", 
 					 cmdCt,
@@ -210,7 +223,7 @@ int checkAccess( FILE *fh, char *proc, char *file, int op )
 
 	/* file level must be dominated or equal to process level to write */
 	if ( op & O_WRITE ) {
-		if ( /* YOUR CODE */ ) {  /* can't write */
+		if (file_level > proc_level ) {  /* can't write */
 			fprintf( fh, "checkAccess[t%d]: deny write: process %s for file %s\n", 
 				 cmdCt, proc, file );
 			return -1;
@@ -238,9 +251,8 @@ int checkTrans( FILE *fh, char *proc, char *file, int op, int ttype )
 {
 	/* get process mapping and file mapping from system_mapping */
 	/* YOUR CODE */
-	elt *procElt;
-	elt *fileElt;
-
+        elt *procElt = get(&system_mapping, proc, matchMapName);
+        elt *fileElt = get(&system_mapping, file, matchMapName);
 	/* check whether operation is authorized for those level */
 	if ( !procElt || !fileElt ) 
 	{
@@ -266,17 +278,26 @@ int checkTrans( FILE *fh, char *proc, char *file, int op, int ttype )
 		/* then, apply any applicable transition (change proc/file level) */
 		if ( op & testop ) {
 			/* YOUR CODE */
+		        elt *apply = get(&trans_mapping, t, matchTrans);
+            		if (apply)
+            		{
+                		/* apply transition */
+                		proc_map->l = ((trans *)(apply->data))->new;
+                		file_map->l = ((trans *)(apply->data))->new;
 
-			/* log result */
-			char *level = (char *) malloc( apply->new->len+1 );
-			strncpy( level, apply->new->name, apply->new->len );
-			level[apply->new->len] = 0;
-			fprintf( fh, "checkTrans[t%d]: trans %s %s to %s\n",
-				 cmdCt,
-				 ((ttype & T_PROC) ? "PROCESS" : "FILE" ), 
-				 ((ttype & T_PROC) ? proc : file ), 
-				 level );
-			free( level );
+                		/* log result */
+                		char *level = (char *)malloc(((trans *)(apply->data))->new->len + 1);
+                		strncpy(level, ((trans *)(apply->data))->new->name, ((trans *)(apply->data))->new->len);
+                		level[((trans *)(apply->data))->new->len] = 0;
+                		fprintf(fh, "checkTrans[t%d]: trans %s %s to %s\n",
+                         	cmdCt,
+                        	((ttype & T_PROC) ? "PROCESS" : "FILE"),
+                        	((ttype & T_PROC) ? proc : file),
+                        	level);
+                		free(level);
+                	}
+
+
 		}
 	}
 

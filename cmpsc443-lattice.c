@@ -114,13 +114,16 @@ int addLabelPolicy( FILE *fh, char *name, char *level )
 
 	/* add mapping between name and level */
 	/* YOUR CODE */
-
+	m->l = levelElt->data;
 	/* create elt for label_mapping */
 	/* YOUR CODE */
-
+        new = (elt *)malloc(sizeof(elt));
+        new->type = E_MAP;
+        new->data = (void *)m;
+        new->next = NULL;
     /* add to label mappings */ 
 	/* YOUR CODE */
-	
+        insert(&label_mapping, new, NULL);
 	fprintf( fh, "AddLabelPolicy[p%d]: Add mapping for name %s to level %s\n", 
 		 cmdCt, name, level );	
 	return 0;
