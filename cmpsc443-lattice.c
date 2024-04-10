@@ -106,7 +106,7 @@ int addLabelPolicy( FILE *fh, char *name, char *level )
 	strncpy( m->name, name, m->len );
 
 	/* find lattice level for map */
-	levelElt = NULL;    	/* YOUR CODE */
+	levelElt = get(&lattice, level, &matchLevelName);    	/* YOUR CODE */
 	if ( !levelElt ) {
 		fprintf( fh, "AddLabelPolicy[p%d]: can't find level %s\n", cmdCt, level );	
 		return -1;
