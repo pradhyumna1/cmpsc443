@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "cmpsc443-refmon.h": "c",
+        "cmpsc443-lattice.h": "c",
+        "cmpsc443-utilities.h": "c"
+    }
+}

@@ -1,0 +1,9 @@
+pstate > low high
+lstate file-old f1 low
+lstate file-old f2 high
+lstate user-new user1 low
+lstate user-new user10 high
+tstate proc-exec low high high
+tstate proc-exec high low low
+tstate open-read high low low
+tstate open-write low high low

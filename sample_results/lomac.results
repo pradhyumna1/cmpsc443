@@ -1,0 +1,43 @@
+Add Lattice[p1]: level: low 
+Add Lattice[p1]: level: high > low 
+AddLabelPolicy[p2]: Add mapping for name f1 to level low
+AddLabelPolicy[p3]: Add mapping for name f2 to level high
+AddLabelPolicy[p4]: Add mapping for name user1 to level low
+AddLabelPolicy[p5]: Add mapping for name user10 to level high
+AddTransPolicy[p6]: on EXEC, if subject level is low and object level is high, 
+	 then transition PROCESS to level high
+AddTransPolicy[p7]: on EXEC, if subject level is high and object level is low, 
+	 then transition PROCESS to level low
+AddTransPolicy[p8]: on READ, if subject level is high and object level is low, 
+	 then transition PROCESS to level low
+AddTransPolicy[p9]: on WRITE, if subject level is low and object level is high, 
+	 then transition FILE to level low
+Command fail: (null)
+labelFile[t1]: Set label for file f1 to low
+labelFile[t3]: Set label for file f2 to high
+labelProcess[t5]: Set label for process p1 to low
+labelProcess[t7]: Set label for process p10 to high
+labelProcess[t9]: Set label for process p2 to low
+checkTrans[t11]: trans PROCESS p2 to high
+checkAccess[t11]: OK! proc: p2 may exec on file: f2
+labelFile[t14]: Set label for file f3 to high
+checkAccess[t16]: OK! proc: p2 may read on file: f3
+checkAccess[t16]: OK! proc: p2 may write file: f3
+checkTrans[t18]: trans PROCESS p2 to low
+checkAccess[t18]: OK! proc: p2 may read on file: f1
+checkAccess[t20]: OK! proc: p2 may read on file: f3
+checkAccess[t22]: deny write: process p2 for file f3
+checkTrans[t24]: trans FILE f3 to low
+checkAccess[t24]: OK! proc: p1 may read on file: f3
+checkAccess[t24]: OK! proc: p1 may write file: f3
+checkAccess[t26]: OK! proc: p2 may write file: f3
+labelProcess[t29]: Set label for process p11 to high
+checkTrans[t31]: trans PROCESS p11 to low
+checkAccess[t31]: OK! proc: p11 may exec on file: f1
+labelFile[t33]: Set label for file f10 to low
+checkAccess[t35]: OK! proc: p11 may read on file: f10
+checkAccess[t35]: OK! proc: p11 may write file: f10
+checkAccess[t37]: OK! proc: p11 may read on file: f1
+checkAccess[t39]: OK! proc: p11 may read on file: f1
+checkAccess[t41]: OK! proc: p10 may write file: f3
+Commands completed: 43

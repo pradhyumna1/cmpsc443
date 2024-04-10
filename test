@@ -1,0 +1,42 @@
+old-file f1
+% label f1 -> low (internet)
+old-file f2
+% label f2 -> high (system)
+login user1 p1
+% label p1 -> low (user)
+login user10 p10
+% label p10 -> high (system)
+fork p1 p2
+% label p2 -> low (user)
+exec p2 f2
+% trans p2 -> high (system)
+% allow p2 exec f2
+create p2 f3
+% label f3 -> high (system)
+open-rw p2 f3
+% allow p2 read-write f3
+open-read p2 f1
+% allow read: mic (yes); biba (no); lomac (yes, trans p2 to low)
+read p2 f3
+% allow read: mic (yes); biba (yes); lomac (yes)
+write p2 f3
+% allow write: mic (yes); biba (yes); lomac (no - p2 is no longer high; f3 cannot trans) 
+open-rw p1 f3
+% allow read-write: mic (no write); biba (no write); lomac (yes, trans f3 to low)
+write p2 f3
+% now ok for all
+%
+fork p10 p11
+% label p11 -> high (system)
+exec p11 f1
+% allow exec: mic (no); biba (no); lomac (yes, trans p11 to low)
+create p11 f10
+% label f10 -> low (from prefix f1 low) (internet)
+open-rw p11 f10
+% allow read: mic (yes); biba (no); lomac (yes); all can write
+open-read p11 f1
+% allow read: mic (yes); biba (no); lomac (yes)
+read p11 f1
+% allow read: mic (yes), biba (no); lomac (yes)
+open-write p10 f3
+% allow write: mic (yes), biba (yes), lomac (yes, no trans)

@@ -1,0 +1,8 @@
+policy mic
+pstate > internet user
+pstate > user system
+lstate file-old f1 internet
+lstate file-old f2 system
+lstate user-new user1 user
+lstate user-new user10 system
+tstate proc-exec user system system

@@ -1,0 +1,35 @@
+Add Lattice[p2]: level: internet 
+Add Lattice[p2]: level: user > internet 
+Add Lattice[p3]: level: system > user 
+AddLabelPolicy[p4]: Add mapping for name f1 to level internet
+AddLabelPolicy[p5]: Add mapping for name f2 to level system
+AddLabelPolicy[p6]: Add mapping for name user1 to level user
+AddLabelPolicy[p7]: Add mapping for name user10 to level system
+AddTransPolicy[p8]: on EXEC, if subject level is user and object level is system, 
+	 then transition PROCESS to level system
+Command fail: (null)
+labelFile[t1]: Set label for file f1 to internet
+labelFile[t3]: Set label for file f2 to system
+labelProcess[t5]: Set label for process p1 to user
+labelProcess[t7]: Set label for process p10 to system
+labelProcess[t9]: Set label for process p2 to user
+checkTrans[t11]: trans PROCESS p2 to system
+checkAccess[t11]: OK! proc: p2 may exec on file: f2
+labelFile[t14]: Set label for file f3 to system
+checkAccess[t16]: OK! proc: p2 may read on file: f3
+checkAccess[t16]: OK! proc: p2 may write file: f3
+checkAccess[t18]: OK! proc: p2 may read on file: f1
+checkAccess[t20]: OK! proc: p2 may read on file: f3
+checkAccess[t22]: OK! proc: p2 may write file: f3
+checkAccess[t24]: OK! proc: p1 may read on file: f3
+checkAccess[t24]: deny write: process p1 for file f3
+checkAccess[t26]: OK! proc: p2 may write file: f3
+labelProcess[t29]: Set label for process p11 to system
+checkAccess[t31]: deny p11: process exec for file f1
+labelFile[t33]: Set label for file f10 to internet
+checkAccess[t35]: OK! proc: p11 may read on file: f10
+checkAccess[t35]: OK! proc: p11 may write file: f10
+checkAccess[t37]: OK! proc: p11 may read on file: f1
+checkAccess[t39]: OK! proc: p11 may read on file: f1
+checkAccess[t41]: OK! proc: p10 may write file: f3
+Commands completed: 43
